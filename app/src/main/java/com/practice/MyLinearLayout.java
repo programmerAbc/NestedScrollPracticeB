@@ -75,11 +75,9 @@ public class MyLinearLayout extends LinearLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        Log.e(TAG, "onMeasure: ===START===");
         if (searchBarMeasuredWidth == -1) {
             searchBarMeasuredWidth = searchBar.getMeasuredWidth();
         }
-        Log.e(TAG, "onMeasure: recyclerViewContainer 1st measure:" + recyclerViewContainer.getMeasuredHeight());
         FrameLayout.LayoutParams searchBarLayoutParams = (FrameLayout.LayoutParams) searchBar.getLayoutParams();
         if (nestedScrollHeight < 0) {
             nestedScrollHeight = topView.getMeasuredHeight() - searchBar.getMeasuredHeight() - searchBarLayoutParams.topMargin / 2 - searchBarLayoutParams.bottomMargin / 2;
@@ -90,18 +88,14 @@ public class MyLinearLayout extends LinearLayout {
         if (searchBarBottomMargin < 0) {
             searchBarBottomMargin = ((FrameLayout.LayoutParams) searchBar.getLayoutParams()).bottomMargin;
         }
-        Log.e(TAG, "onMeasure: searchBar measured height" + searchBar.getMeasuredHeight());
         LinearLayout.LayoutParams scrollViewContainerLayoutParams = (LayoutParams) recyclerViewContainer.getLayoutParams();
-        Log.e(TAG, "onMeasure: a=" + getMeasuredHeight() + "b=" + searchBar.getMeasuredHeight() + "c=" + searchBarLayoutParams.topMargin + "d=" + searchBarLayoutParams.bottomMargin);
         scrollViewContainerLayoutParams.height = getMeasuredHeight() - searchBar.getMeasuredHeight() - searchBarLayoutParams.topMargin - searchBarLayoutParams.bottomMargin;
-        Log.e(TAG, "onMeasure: recyclerViewContainer layoutparams height" + scrollViewContainerLayoutParams.height);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        Log.e(TAG, "onMeasure: recyclerViewContainer 2nd measure:" + recyclerViewContainer.getMeasuredHeight());
-        Log.e(TAG, "onMeasure: ===END===");
     }
 
     @Override
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
+        scroller.abortAnimation();
         return (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
     }
 
@@ -124,8 +118,6 @@ public class MyLinearLayout extends LinearLayout {
         topIv.setAlpha(1 - scrollFactor);
         topIv.setScaleY(1 + scrollFactor);
         topIv.setScaleX(1 + scrollFactor);
-        Log.e(TAG, "scrollTo: a= " + personBtn.getMeasuredWidth() + " b= " + checkDownloadBtn.getMeasuredWidth() + " c= " + scrollFactor);
-        Log.e(TAG, "scrollTo: width=" + (searchBarMeasuredWidth - (int) ((personBtn.getMeasuredWidth() + ((RelativeLayout.LayoutParams) personBtn.getLayoutParams()).rightMargin + checkDownloadBtn.getMeasuredWidth() + ((RelativeLayout.LayoutParams) checkDownloadBtn.getLayoutParams()).leftMargin) * scrollFactor)));
         searchBar.getLayoutParams().width = searchBarMeasuredWidth - (int) ((personBtn.getMeasuredWidth() + ((RelativeLayout.LayoutParams) personBtn.getLayoutParams()).rightMargin + checkDownloadBtn.getMeasuredWidth() + ((RelativeLayout.LayoutParams) checkDownloadBtn.getLayoutParams()).leftMargin) * scrollFactor);
         ((FrameLayout.LayoutParams) searchBar.getLayoutParams()).topMargin = searchBarTopMargin - (int) (searchBarTopMargin / 2 * scrollFactor);
         ((FrameLayout.LayoutParams) searchBar.getLayoutParams()).bottomMargin = searchBarBottomMargin - (int) (searchBarBottomMargin / 2 * scrollFactor);
@@ -144,6 +136,9 @@ public class MyLinearLayout extends LinearLayout {
                 scroller.startScroll(0, getScrollY(), 0, -getScrollY(), 300);
                 invalidate();
             }
+            Log.e(TAG, "onStopNestedScroll: perform auto docking!!!" + "getScrollY()=" + getScrollY() + ",nestedScrollHeight/2=" + nestedScrollHeight / 2);
+        } else {
+            Log.e(TAG, "onStopNestedScroll: not perform auto docking!!!" + "getScrollY()=" + getScrollY() + ",nestedScrollHeight/2=" + nestedScrollHeight / 2);
         }
     }
 
